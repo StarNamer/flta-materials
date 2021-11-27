@@ -35,7 +35,8 @@ class _HomeState extends State<Home> {
         // TODO replace body
         body: pages[tabManager.selectedTab],
         bottomNavigationBar: BottomNavigationBar(
-          selectedItemColor: Theme.of(context).textSelectionTheme.selectionColor,
+          selectedItemColor: Theme.of(context)
+              .textSelectionTheme.selectionColor,
           currentIndex: tabManager.selectedTab,
           onTap: (index) {
             tabManager.gotoTab(index);
