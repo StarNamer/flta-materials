@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../models/models.dart';
+import '../components/grocery_tile.dart';
 
 class GroceryItemScreen extends StatefulWidget {
   final Function(GroceryItem) onCreate;
@@ -69,9 +71,28 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              // TODO add callback handler
+              final groceryItem = GroceryItem(
+                id: widget.originalItem?.id ?? const Uuid().v1(),
+                name: _nameController.text,
+                importance: _importance,
+                color: _currentColor,
+                quantity: _currentSliderValue,
+                date: DateTime(
+                  _dueDate.year,
+                  _dueDate.month,
+                  _dueDate.day,
+                  _timeOfDay.hour,
+                  _timeOfDay.minute,
+                ),
+              );
+
+              if (widget.isUpdating) {
+                widget.onUpdate(groceryItem);
+              } else {
+                widget.onCreate(groceryItem);
+              }
             },
-          )
+          ),
         ],
         elevation: 0.0,
         title: Text(
@@ -86,10 +107,27 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
             buildNameField(),
             buildImportanceField(),
             buildDateField(context),
-            // TODO add time picker
-            // TODO add color picker
-            // TODO add slider
-            // TODO add Grocery tile
+            buildTimeField(context),
+            const SizedBox(height: 10.0),
+            buildColorPicker(context,),
+            const SizedBox(height: 10.0),
+            buildQuantityField(),
+            GroceryTile(
+                item: GroceryItem(
+                  id: 'previewMode',
+                  name: _name,
+                  importance: _importance,
+                  color: _currentColor,
+                  quantity: _currentSliderValue,
+                  date: DateTime(
+                    _dueDate.year,
+                    _dueDate.month,
+                    _dueDate.day,
+                    _dueDate.hour,
+                    _dueDate.minute,
+                  ),
+                ),
+            ),
           ],
         ),
       ),
@@ -102,7 +140,7 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
       children: [
         Text(
           'Item Name',
-          style: GoogleFonts.lato(fontSize: 28.0)
+          style: GoogleFonts.lato(fontSize: 20.0)
         ),
         TextField(
           controller: _nameController,
@@ -130,7 +168,7 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
       children: [
         Text(
           'Importance',
-          style: GoogleFonts.lato(fontSize: 28.0),
+          style: GoogleFonts.lato(fontSize: 20.0),
         ),
         Wrap(
           spacing: 10.0,
@@ -183,7 +221,7 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
           children: [
             Text(
               'Date',
-              style: GoogleFonts.lato(fontSize: 28.0),
+              style: GoogleFonts.lato(fontSize: 20.0),
             ),
             TextButton(
                 child: const Text('Select'),
@@ -208,7 +246,121 @@ class _GroceryItemScreenState extends State<GroceryItemScreen> {
     );
   }
 
-  // TODO add buildTimeField
-  // TODO add buildColorPicker
-  // TODO add buildQuantityField
+  Widget buildTimeField(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Time of Day',
+                  style: GoogleFonts.lato(fontSize: 20.0),
+                ),
+                TextButton(
+                    child: const Text('Select'),
+                onPressed:  () async {
+                      final timeOfDay = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now());
+
+                      setState(() {
+                        if (timeOfDay != null){
+                          _timeOfDay = timeOfDay;
+                        }
+                      });
+                },
+                ),
+              ],
+          ),
+          Text('${_timeOfDay.format(context)}'),
+        ],
+    );
+  }
+
+ Widget buildColorPicker(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              height: 50.0,
+              width: 10.0,
+              color: _currentColor,
+            ),
+            const SizedBox(width: 8.0),
+            Text(
+              'Color',
+              style: GoogleFonts.lato(fontSize: 20.0),
+            ),
+          ],
+        ),
+        TextButton(
+          child: const Text('Select'),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: BlockPicker(
+                      pickerColor: Colors.white,
+                      onColorChanged: (color) {
+                        setState(() => _currentColor = color);
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('Save'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+        ),
+      ],
+    );
+  }
+
+  Widget buildQuantityField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              'Quantity',
+              style: GoogleFonts.lato(fontSize: 20.0),
+            ),
+            const SizedBox(width: 16.0),
+            Text(
+              _currentSliderValue.toInt().toString(),
+              style: GoogleFonts.lato(fontSize: 18.0),
+            ),
+          ],
+        ),
+        Slider(
+          inactiveColor: _currentColor.withOpacity(0.5),
+          activeColor: _currentColor,
+          value: _currentSliderValue.toDouble(),
+          min: 0.0,
+          max: 100.0,
+          divisions: 100,
+          label: _currentSliderValue.toInt().toString(),
+          onChanged: (double value) {
+            setState(() {
+                _currentSliderValue = value.toInt();
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
