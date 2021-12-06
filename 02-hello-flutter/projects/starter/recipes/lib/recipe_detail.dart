@@ -18,7 +18,6 @@ class RecipeDetail extends StatefulWidget {
 class _RecipeDetailState extends State<RecipeDetail> {
   int _sliderVal = 1;
 
-
   @override
   Widget build(BuildContext context) {
     // 1
@@ -48,7 +47,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
               widget.recipe.label,
               style: const TextStyle(fontSize: 18),
             ),
-            // 7
+// 7
             Expanded(
               // 8
               child: ListView.builder(
@@ -60,7 +59,6 @@ class _RecipeDetailState extends State<RecipeDetail> {
                   return Text('${ingredient.quantity * _sliderVal} '
                       '${ingredient.measure} '
                       '${ingredient.name}');
-
                 },
               ),
             ),
@@ -84,11 +82,9 @@ class _RecipeDetailState extends State<RecipeDetail> {
               activeColor: Colors.green,
               inactiveColor: Colors.black,
             ),
-
           ],
         ),
       ),
     );
   }
 }
-

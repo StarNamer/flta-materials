@@ -4,14 +4,12 @@ class Recipe {
   int servings;
   List<Ingredient> ingredients;
 
-
   Recipe(
       this.label,
       this.imageUrl,
       this.servings,
       this.ingredients,
       );
-
   static List<Recipe> samples = [
     Recipe(
       'Spaghetti and Meatballs',

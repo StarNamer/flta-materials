@@ -4,4 +4,4 @@ export 'post.dart';
 export 'simple_recipe.dart';
 export 'grocrery_item.dart';
 export 'tab_manager.dart';
-import 'grocery_manager.dart';
+export 'grocery_manager.dart';

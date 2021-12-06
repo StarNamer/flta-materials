@@ -22,7 +22,7 @@ class RecipeApp extends StatelessWidget {
       // 5
       theme: theme.copyWith(
         colorScheme: theme.colorScheme.copyWith(
-          primary: Colors.grey,
+          primary: Colors.red,
           secondary: Colors.black,
         ),
       ),
@@ -61,16 +61,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       // 3
       body: SafeArea(
-        // TODO: Replace child: Container()
-        // 4
 // 4
         child: ListView.builder(
           // 5
           itemCount: Recipe.samples.length,
           // 6
           itemBuilder: (BuildContext context, int index) {
-            // 7
-            // TODO: Update to return Recipe card
 // 7
             return GestureDetector(
               // 8
@@ -89,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
               // 11
               child: buildRecipeCard(Recipe.samples[index]),
             );
-
           },
         ),
       ),
